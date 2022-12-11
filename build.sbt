@@ -1,0 +1,21 @@
+import Dependencies._
+
+val scala3Version = "3.2.1"
+
+lazy val root = project
+  .in(file("."))
+  .settings(
+    name := "tictactoe",
+    version := "0.1.0-SNAPSHOT",
+
+    scalaVersion := scala3Version,
+    resolvers += Resolver.sonatypeRepo("snapshots"),
+    scalacOptions ++= List("-feature", "-deprecation", "-Ykind-projector:underscores", "-source:future"),
+
+    libraryDependencies ++= Seq(
+      Libraries.cats,
+      Libraries.catsEffect,
+      //Libraries.catsEffectTesting,
+      Libraries.munit,
+    ),
+  )
