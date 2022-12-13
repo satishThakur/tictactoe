@@ -43,7 +43,30 @@ case class Board(state: Map[Cell, Piece]):
   def placePiece(position: Cell, piece: Piece): Board =
      Board(state + (position -> piece))
 
+  def pieceAt(position: Cell) : Option[Piece] = state.get(position)
+
+  def prettyPrint: String =
+    val cells: List[Cell] = Cell.all
+    val cellValues: List[String] = cells.map(c => pieceAt(c).map({
+      case Piece.O => "O"
+      case Piece.X => "X"
+    }).getOrElse(c.rank.toString))
+
+    val rows : List[List[String]] = cellValues.grouped(3).toList
+
+    val rowValues : List[String] = rows.map(ls => ls.mkString("║ ", " ║ ", " ║"))
+
+    rowValues.mkString("════╬═══╬═══\n","\n════╬═══╬═══\n","\n════╬═══╬═══\n")
+
 object Board:
   def empty: Board = new Board(Map.empty)
 
 
+object BoardApp extends App:
+  val b = Board.empty
+  val one = Cell(1).get
+  val four = Cell(4).get
+  val b1 = b.placePiece(one, Piece.O)
+  val b2 = b1.placePiece(four, Piece.X)
+
+  println(b2.prettyPrint)

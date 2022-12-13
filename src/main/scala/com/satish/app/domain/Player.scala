@@ -1,3 +1,4 @@
 package com.satish.app.domain;
 
-enum Player {}
+
+case class Player(piece: Piece)
