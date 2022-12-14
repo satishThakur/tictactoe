@@ -6,16 +6,15 @@ case class Row(empty: List[Cell], mine: List[Cell], opponent: List[Cell])
 object Row:
   def apply:Row =  Row(Nil, Nil, Nil)
 
-class Brain {
+object Brain:
 
   def getNextMove(b: Board): Option[Cell] =
-    Cell.winnerCombination.find(w => {
-      val row = processRow(w, _ => None)
-      val c: Option[Cell] = myWinningMove(row).orElse(opponentWinningmove(row))
-      
-      ???
+    Cell.winnerCombination.foldRight(None: Option[Cell])((w,o) => {
+      o.orElse {
+        val row = processRow(w, _ => None)
+        myWinningMove(row).orElse(opponentWinningmove(row))
+      }
     })
-    ???
 
   def processRow(cells: List[Cell], query: Cell => Option[Player]): Row =
     cells.foldRight(Row.apply)((c, r) => query(c) match {
@@ -31,4 +30,3 @@ class Brain {
   def opponentWinningmove(r : Row): Option[Cell] =
     if r.empty.size == 1 && r.opponent.size == 2
     then Some(r.empty(0)) else None
-}

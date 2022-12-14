@@ -17,5 +17,9 @@ lazy val root = project
       Libraries.catsEffect,
       //Libraries.catsEffectTesting,
       Libraries.munit,
+      Libraries.munitScalaCheck,
+      Libraries.weaver,
+      Libraries.weaverScalaCheck,
     ),
+    testFrameworks += new TestFramework("weaver.framework.CatsEffect")
   )
