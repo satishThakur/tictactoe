@@ -44,6 +44,9 @@ case class Board(state: Map[Cell, Piece]):
      Board(state + (position -> piece))
 
   def pieceAt(position: Cell) : Option[Piece] = state.get(position)
+  
+  def isPieceAt(postion: Cell, piece: Piece): Boolean =
+    pieceAt(postion).map(_ == piece).getOrElse(false)
 
   def prettyPrint: String =
     val cells: List[Cell] = Cell.all

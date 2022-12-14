@@ -5,7 +5,7 @@ package com.satish.app.domain
  * Cell represent a cell in the TicTacToe board.
  */
 
-opaque type Cell <: Int = Int
+opaque type Cell = Int
 
 object Cell:
 
