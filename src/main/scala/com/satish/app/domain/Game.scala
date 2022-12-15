@@ -3,6 +3,8 @@ import com.satish.app.state.*
 
 
 case class Game(board: Board, current: Player, players: (Player, Player)):
+  def allPlayers: List[Player] = List(players(0), players(1))
+
   def move(cell: Cell) : Game =
     val stf = Game.transision(cell, current.piece)
     stf.run(this)(1)

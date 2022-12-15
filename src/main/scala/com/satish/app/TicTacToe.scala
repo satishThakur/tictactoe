@@ -2,6 +2,7 @@ package com.satish.app
 import cats.effect.{IO, IOApp}
 import com.satish.app.domain.{Board, Cell, Game, Piece, Player, Status}
 import cats.effect.std.Random
+import com.satish.app.services.Brain
 
 
 case class GameSetup(humanPiece : Piece, tossWinner : Player)
@@ -14,10 +15,17 @@ object TicTacToe extends IOApp.Simple:
       _ <- IO.println("game setup start..")
       game <- gameSetup
       _ <- IO.println("Setup done -> starting game..")
-      status <- gameLoop(game)
-      _ <- IO.println(s"Game over - ${status}")
+      game <- gameLoop(game)
+      _ <- printGameStatus(game)
     }yield ()
 
+  def printGameStatus(game: Game): IO[Unit] =
+    for{
+      _ <- IO.println("Final Board...")
+      _ <- IO.println(game.board.prettyPrint)
+      mess <- gameResult(game.status)
+      _ <- IO.println(mess)
+    }yield ()
 
   def gameSetup: IO[Game] =
     for{
@@ -48,12 +56,18 @@ object TicTacToe extends IOApp.Simple:
 
 
 
-  def gameLoop(game: Game): IO[Status] =
+  def gameLoop(game: Game): IO[Game] =
     game.status match {
       case Status.Ongoing => IO.println(s"game status ${game.status}") *> IO.println(game.board.prettyPrint) *>
-        userInput(game.current, game.board.isEmptyAt).
+        getPlayerInput(game.board, game.allPlayers,game.current, game.board.emptyCells).
         map(c => game.move(c)).flatMap(gameLoop(_))
-      case other => IO.println(s"game status ${game.status}") *> IO.pure(other)
+      case other => IO.println(s"game status ${game.status}") *> IO.pure(game)
+    }
+
+  def getPlayerInput(b: Board, players: List[Player], current: Player, emptyCells : List[Cell]): IO[Cell] =
+    current match {
+      case Player(_, true) => computerInput(b, players, emptyCells)
+      case _ => userInput(current, c => emptyCells.contains(c))
     }
 
   def userInput(p : Player, predicate: Cell => Boolean) : IO[Cell] =
@@ -64,6 +78,19 @@ object TicTacToe extends IOApp.Simple:
       vcell <- IO.pure(predicate(cell)).flatMap(if _ then IO.pure(cell) else IO.println("cell accupied") *> userInput(p, predicate))
     }yield vcell
 
-  def gameResult(result: Status) : IO[String] = ???
+  def computerInput(b: Board, players: List[Player], emptyCells: List[Cell]) : IO[Cell] =
+    IO.fromOption(Brain.getNextMove(b, players))(new RuntimeException).orElse{
+      for {
+        r <- Random.scalaUtilRandom[IO]
+        b <- r.nextIntBounded(emptyCells.size)
+      }yield emptyCells(b)
+    }.flatTap(_ => IO.println("Computer turn: Press ENTER to continue")) <* IO.readLine
+
+  def gameResult(status: Status) : IO[String] = status match {
+    case Status.Draw => IO.pure("Game ended in draw, better luck next time!!")
+    case Status.Completed(Player(_, true)) => IO.pure("Computer won, you lost")
+    case _ => IO.pure("Yay!! You won!!")
+  }
+
 
 

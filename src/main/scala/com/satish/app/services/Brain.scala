@@ -1,5 +1,5 @@
 package com.satish.app.services
-import com.satish.app.domain.{Board, Cell, Player}
+import com.satish.app.domain.{Board, Cell, Piece, Player}
 
 case class Row(empty: List[Cell], mine: List[Cell], opponent: List[Cell])
 
@@ -8,13 +8,22 @@ object Row:
 
 object Brain:
 
-  def getNextMove(b: Board): Option[Cell] =
+  def getNextMove(b: Board, players: List[Player]): Option[Cell] =
+
+    val pieceToPlayer: Map[Piece, Player] = players.groupMapReduce(_.piece)(identity)((p1, p2) => p1)
+
     Cell.winnerCombination.foldRight(None: Option[Cell])((w,o) => {
       o.orElse {
-        val row = processRow(w, _ => None)
+        val row = processRow(w, queryBoard(b, pieceToPlayer))
         myWinningMove(row).orElse(opponentWinningmove(row))
       }
     })
+
+  def queryBoard(b: Board,pieceToPlayer : Map[Piece, Player])(c: Cell): Option[Player] =
+    b.pieceAt(c).flatMap{
+      case p => pieceToPlayer.get(p)
+    }
+
 
   def processRow(cells: List[Cell], query: Cell => Option[Player]): Row =
     cells.foldRight(Row.apply)((c, r) => query(c) match {
@@ -30,3 +39,18 @@ object Brain:
   def opponentWinningmove(r : Row): Option[Cell] =
     if r.empty.size == 1 && r.opponent.size == 2
     then Some(r.empty(0)) else None
+
+object BrainApp extends App:
+
+  val board = Board(
+    Cell(1).get -> Piece.X,
+    Cell(2).get -> Piece.O,
+    Cell(7).get -> Piece.O,
+    Cell(5).get -> Piece.X,
+    Cell(3).get -> Piece.X)
+
+  val players = List(Player(Piece.O, true), Player(Piece.X, false))
+
+  val cell = Brain.getNextMove(board, players)
+  println(cell)
+  println(board.prettyPrint)

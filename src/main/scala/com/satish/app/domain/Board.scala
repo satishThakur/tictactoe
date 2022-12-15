@@ -1,4 +1,5 @@
 package com.satish.app.domain
+import com.satish.app.state.State
 
 /**
  * Created by satish on 10/06/17.
@@ -44,7 +45,7 @@ case class Board(state: Map[Cell, Piece]):
      Board(state + (position -> piece))
 
   def pieceAt(position: Cell) : Option[Piece] = state.get(position)
-  
+
   def isPieceAt(postion: Cell, piece: Piece): Boolean =
     pieceAt(postion).map(_ == piece).getOrElse(false)
 
@@ -64,6 +65,17 @@ case class Board(state: Map[Cell, Piece]):
 object Board:
   def empty: Board = new Board(Map.empty)
 
+  def apply(cells: (Cell, Piece)*): Board =
+    val initailBoard = empty
+    stf(cells.toList).run(initailBoard)(1)
+
+
+  def stf(cells: List[(Cell, Piece)]) : State[Board, List[Board]] =
+    State.traverse[Board,(Cell, Piece), Board](cells)(l => for{
+      s <- State.modify[Board](b => b.placePiece(l(0), l(1)))
+      g <- State.get
+    }yield g)
+
 
 object BoardApp extends App:
   val b = Board.empty
@@ -73,3 +85,11 @@ object BoardApp extends App:
   val b2 = b1.placePiece(four, Piece.X)
 
   println(b2.prettyPrint)
+
+  val board = Board(
+    Cell(1).get -> Piece.X,
+    Cell(2).get -> Piece.O,
+    Cell(5).get -> Piece.X,
+    Cell(9).get -> Piece.X)
+  println(board.prettyPrint)
+
