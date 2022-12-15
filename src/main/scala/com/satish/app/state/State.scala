@@ -64,7 +64,7 @@ object State:
   def set[S](s: S): State[S,Unit] = _ => ((), s)
 
   def modify[S](f: S => S): State[S, Unit] = for{
-    s <- get
-    _ <- set(f(s))
+    s <- get[S]
+    _ <- set[S](f(s))
   }yield ()
 

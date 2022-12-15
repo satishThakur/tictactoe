@@ -1,5 +1,7 @@
 package com.satish.app.domain
 
+import scala.util.Try
+
 /**
  * Cell ia a subset of Int but restricts the values to 1 to 9.
  * Cell represent a cell in the TicTacToe board.
@@ -25,7 +27,7 @@ object Cell:
   /**
    * Converts a raw string to a Cell.
    */
-  def fromString(s: String): Option[Cell] = apply(s.trim.toInt)
+  def fromString(s: String): Option[Cell] = Try(s.toInt).toOption.flatMap(apply)
 
   /**
    *
