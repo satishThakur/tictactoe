@@ -46,8 +46,8 @@ object Cell:
 
   extension (c: Cell)
     def rank: Int = c
-    def row: Int = c  / 3
-    def col: Int = c  % 3
+    def row: Int = (c  - 1)  / 3
+    def col: Int = (c - 1)  % 3
 
 object CellApp extends App:
   println(Cell.all)

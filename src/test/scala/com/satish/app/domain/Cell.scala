@@ -15,5 +15,19 @@ class CellSuite extends munit.FunSuite {
     val cell2 = Cell(10)
     assertEquals(cell2, None)
   }
+
+  test("All winner combinations are correct"){
+    def isWinner(cells : List[Cell]): Boolean =
+      cells.size == 3 &&
+        (
+          cells.map(_.row).forall(_ == cells.head.row) ||
+          cells.map(_.col).forall(_ == cells.head.col) ||
+          cells.map(c => (c.row, c.col)).forall{ case (r, c) => r == c } ||
+          cells.map(c => (c.row, c.col)).forall{ case (r, c) => r + c == 2 }
+          )
+    Cell.winnerCombination.foreach{ cells =>
+      assert(isWinner(cells), s"Cells $cells are not a winner combination")
+    }
+  }
   
 }
