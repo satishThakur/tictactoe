@@ -48,28 +48,27 @@ object TicTacToe extends IOApp.Simple:
   private def getUserPiecePreference[F[_]: Monad](console: Console[F]): F[Piece] =
     for{
       _ <- console.println("Enter X or O to choose your piece")
-      str <- console.readLine
-      //p = IO.fromOption(Piece(str))(new RuntimeException)
-      p = Monad[F].pure(Piece(str))
-      //piece <- p.orElse(getUserPiecePreference(console))
-      piece <- p.flatMap(_.fold(getUserPiecePreference(console))(Monad[F].pure))
+      p <- console.readLine.map(Piece(_))
+      piece <- p.fold(getUserPiecePreference(console))(_.pure)
     } yield piece
 
   private def toss[F[_]: Sync](p1: Player, p2 : Player)(console: Console[F]): F[Player] =
     for{
       rand <- Random.scalaUtilRandom[F]
-      r <- rand.nextBoolean
-      p <- if r then p1.pure[F] else p2.pure[F]
+      p <- rand.nextBoolean.map(if _ then p1 else p2)
       _ <- console.println(s"Toss won by ${p}, press ENTER to continue")
     } yield p
 
-
   private def gameLoop[F[_]: Sync](game: Game)(console: Console[F]): F[Game] =
     game.status match {
-      case Status.Ongoing => console.println(s"game status ${game.status}") *> console.println(game.board.prettyPrint) *>
-        getPlayerInput(game.board, game.allPlayers,game.current, game.board.emptyCells)(console).
-        map(c => game.move(c)).flatMap(gameLoop[F](_)(console))
-      case _ => console.println(s"game status ${game.status}") *> Monad[F].pure(game)
+      case Status.Ongoing => for{
+        _ <- console.println(s"game status ${game.status}")
+        _ <- console.println(game.board.prettyPrint)
+        c <- getPlayerInput(game.board, game.allPlayers,game.current, game.board.emptyCells)(console)
+        newGame <- game.move(c).pure
+        g <- gameLoop(newGame)(console)
+      }yield g
+      case _ => console.println(s"game status ${game.status}") *> game.pure
     }
 
   private def getPlayerInput[F[_]: Sync](b: Board, players: List[Player], current: Player, emptyCells : List[Cell])(console: Console[F]): F[Cell] =
@@ -81,18 +80,15 @@ object TicTacToe extends IOApp.Simple:
 
   private def userInput[F[_]: Monad](p: Player, predicate: Cell => Boolean)(console: Console[F]): F[Cell] =
     for {
-      raw <- console.println("Enter the cell number") *> console.readLine.map(Cell.fromString(_))
-      //c = Monad[F].pure(Cell.fromString(raw))
-      cell <- raw.fold(console.println("wrong format") *> userInput(p, predicate)(console))(Monad[F].pure)
-      //cell <- c.flatMap(_.fold(console.println("wrong format") *> userInput(p, predicate)(console), Monad[F].pure(_)))
-      //cell <- c.orElse(console.println("wrong format") *> userInput(p, predicate)(console))
-      vcell <- Monad[F].pure(predicate(cell)).flatMap(if _ then Monad[F].pure(cell) else console.println("cell accupied") *> userInput(p, predicate)(console))
+      raw <- console.println("Enter the cell number") *> console.readLine.map(Cell.fromString)
+      cell <- raw.fold(console.println("wrong format") *> userInput(p, predicate)(console))(_.pure)
+      vcell <- predicate(cell).pure.flatMap(if _ then cell.pure else console.println("cell occupied") *> userInput(p, predicate)(console))
     }yield vcell
 
   //TODO : can monadtransformer be used here?
   private def computerInput[F[_]: Sync](b: Board, players: List[Player], emptyCells: List[Cell])(console: Console[F]) : F[Cell] =
     Monad[F].pure(Brain.getNextMove(b, players)).flatMap{
-      case Some(c) => Monad[F].pure(c)
+      case Some(c) => c.pure
       case None =>
         for {
           r <- Random.scalaUtilRandom[F]
@@ -102,9 +98,9 @@ object TicTacToe extends IOApp.Simple:
 
 
   private def gameResult[F[_]: Monad](status: Status) : F[String] = status match {
-    case Status.Draw => Monad[F].pure("Game ended in draw, better luck next time!!")
-    case Status.Completed(Player(_, true)) => Monad[F].pure("Computer won, you lost")
-    case _ => Monad[F].pure("Yay!! You won!!")
+    case Status.Draw => "Game ended in draw, better luck next time!!".pure
+    case Status.Completed(Player(_, true)) => "Computer won, you lost".pure
+    case _ => "Yay!! You won!!".pure
   }
 
 
