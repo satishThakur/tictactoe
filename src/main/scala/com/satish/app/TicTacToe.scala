@@ -1,11 +1,11 @@
 package com.satish.app
 import cats.Monad
 import cats.effect.Sync
+import cats.effect.std.Random as CatsRandom
 import cats.effect.{IO, IOApp}
 import com.satish.app.domain.{Board, Cell, Game, Piece, Player, Status}
-import cats.effect.std.Random
 import com.satish.app.services.Brain
-import com.satish.app.effects.Console
+import com.satish.app.effects.{Console, Random}
 import cats.syntax.all.*
 
 object TicTacToe extends IOApp.Simple:
@@ -13,11 +13,16 @@ object TicTacToe extends IOApp.Simple:
   def run: IO[Unit] =
     IO.println("Hello World!")
     val console = Console.make[IO]
-    val instance = new TicTacToeCli[IO](console)
-    instance.runGameAndPrintStatus
+    val randEffect: IO[CatsRandom[IO]] = CatsRandom.scalaUtilRandom[IO]
+    for{
+      r <- randEffect
+      _ <- new TicTacToeCli[IO](console, Random.make[IO](r)).runGameAndPrintStatus
+    } yield ()
+
+
 end TicTacToe
 
-class TicTacToeCli[F[_]: Sync](console: Console[F]):
+class TicTacToeCli[F[_]: Sync](console: Console[F], random: Random[F]):
   def runGameAndPrintStatus: F[Unit] = for {
     game <- runGameToCompletion
     _ <- printGameStatus(game)
@@ -57,8 +62,7 @@ class TicTacToeCli[F[_]: Sync](console: Console[F]):
 
   private def toss(p1: Player, p2: Player): F[Player] =
     for {
-      rand <- Random.scalaUtilRandom[F]
-      p <- rand.nextBoolean.map(if _ then p1 else p2)
+      p <- random.nextBoolean.map(if _ then p1 else p2)
       _ <- console.println(s"Toss won by ${p}, press ENTER to continue")
     } yield p
 
@@ -95,10 +99,7 @@ class TicTacToeCli[F[_]: Sync](console: Console[F]):
     } yield cell).flatTap(_ => console.println("Computer turn: Press ENTER to continue")) <* console.readLine
 
   private def randomComputerInput(emptyCells: List[Cell]): F[Cell] =
-    for {
-      r <- Random.scalaUtilRandom[F]
-      b <- r.nextIntBounded(emptyCells.size)
-    } yield emptyCells(b)
+    random.nextInt(emptyCells.size).map(emptyCells(_))
 
   private def gameResult(status: Status): F[String] = status match {
     case Status.Draw => "Game ended in draw, better luck next time!!".pure
