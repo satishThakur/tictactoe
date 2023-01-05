@@ -49,9 +49,4 @@ object Cell:
     def row: Int = (c  - 1)  / 3
     def col: Int = (c - 1)  % 3
 
-object CellApp extends App:
-  println(Cell.all)
-  Cell.all.foreach(c => println(s"Cell: $c, Row: ${c.row}, Col: ${c.col}"))
-  println(Cell.fromString("1"))
-  println(Cell.fromString("10"))
 

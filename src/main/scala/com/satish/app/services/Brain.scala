@@ -39,18 +39,3 @@ object Brain:
   private def opponentWinningMove(r : Row): Option[Cell] =
     if r.empty.size == 1 && r.opponent.size == 2
     then Some(r.empty(0)) else None
-
-object BrainApp extends App:
-
-  val board = Board(
-    Cell(1).get -> Piece.X,
-    Cell(2).get -> Piece.O,
-    Cell(7).get -> Piece.O,
-    Cell(5).get -> Piece.X,
-    Cell(3).get -> Piece.X)
-
-  val players = List(Player(Piece.O, true), Player(Piece.X, false))
-
-  val cell = Brain.getNextMove(board, players)
-  println(cell)
-  println(board.prettyPrint)

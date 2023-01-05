@@ -76,20 +76,3 @@ object Board:
       g <- State.get
     }yield g)
 
-
-object BoardApp extends App:
-  val b = Board.empty
-  val one = Cell(1).get
-  val four = Cell(4).get
-  val b1 = b.placePiece(one, Piece.O)
-  val b2 = b1.placePiece(four, Piece.X)
-
-  println(b2.prettyPrint)
-
-  val board = Board(
-    Cell(1).get -> Piece.X,
-    Cell(2).get -> Piece.O,
-    Cell(5).get -> Piece.X,
-    Cell(9).get -> Piece.X)
-  println(board.prettyPrint)
-
