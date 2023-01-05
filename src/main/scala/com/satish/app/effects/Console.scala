@@ -1,6 +1,7 @@
 package com.satish.app.effects
 import cats.effect.kernel.{Ref, Sync}
 import cats.effect.std.Console as CatsConsole
+import cats.syntax.all.*
 
 /**
  * A capability trait to read and write to the console. This is not a typeclass
@@ -8,7 +9,7 @@ import cats.effect.std.Console as CatsConsole
  * @tparam F
  */
 trait Console[F[_]]:
-  def println(line: String): F[Unit]
+  def printLine(line: String): F[Unit]
   def readLine: F[String]
 
 object Console:
@@ -18,7 +19,7 @@ object Console:
    * @return Console instance
    */
   def make[F[_] : CatsConsole]: Console[F] = new Console[F]:
-    def println(line: String): F[Unit] = CatsConsole[F].println(line)
+    def printLine(line: String): F[Unit] = CatsConsole[F].println(line)
     def readLine: F[String] = CatsConsole[F].readLine
 
   /**
@@ -29,5 +30,5 @@ object Console:
    * @return - Console instance
    */
   def makeTest[F[_]: Sync](reader : Ref[F, List[String]], writer : Ref[F, List[String]]): Console[F] = new Console[F]:
-    def println(line: String): F[Unit] = writer.update(line :: _)
+    def printLine(line: String): F[Unit] = Sync[F].delay(println(line)) *> writer.update(line :: _)
     def readLine: F[String] = reader.modify { case h :: t => (t, h) }
