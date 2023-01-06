@@ -4,4 +4,4 @@ This simple application demonstrate how we can use effect system to write pure f
 ## Local development
 1. Run `sbt assembly` to build the project.
 2. Go to the deployments/local directory.
-3Execute the following `sudo docker-compose run --rm tictactoe`
+3. Execute the following `sudo docker-compose run --rm tictactoe`
