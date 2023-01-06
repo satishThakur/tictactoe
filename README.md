@@ -1,12 +1,7 @@
-## sbt project compiled with Scala 3
-
-### Usage
-
-This is a normal sbt project. You can compile code with `sbt compile`, run it with `sbt run`, and `sbt console` will start a Scala 3 REPL.
-
-For more information on the sbt-dotty plugin, see the
-[scala3-example-project](https://github.com/scala/scala3-example-project/blob/main/README.md).
-
-### TODO
-. Add docker support.
-. Add readme for the project.
+## Introduction
+This is a simple TicTacToe game written in Scala 3 using cats-effect 3. 
+This simple application demonstrate how we can use effect system to write pure functional code.
+## Local development
+1. Run `sbt assembly` to build the project.
+2. Go to the deployments/local directory.
+3Execute the following `sudo docker-compose run --rm tictactoe`

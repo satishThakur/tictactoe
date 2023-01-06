@@ -11,7 +11,6 @@ import cats.syntax.all.*
 object TicTacToe extends IOApp.Simple:
 
   def run: IO[Unit] =
-    IO.println("Hello World!")
     val console = Console.make[IO]
     val randEffect: IO[CatsRandom[IO]] = CatsRandom.scalaUtilRandom[IO]
     for{
