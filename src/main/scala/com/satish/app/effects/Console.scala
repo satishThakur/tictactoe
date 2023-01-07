@@ -13,6 +13,14 @@ trait Console[F[_]]:
   def readLine: F[String]
 
 object Console:
+
+  def apply[F[_]](using Console[F]): Console[F] = summon[Console[F]]
+
+  given ioConsole[F[_] : CatsConsole]: Console[F] with
+    def printLine(line: String): F[Unit] = summon[CatsConsole[F]].println(line)
+    def readLine: F[String] = summon[CatsConsole[F]].readLine
+
+
   /**
    * Real console which can be used in production.
    * @tparam F Effect type
