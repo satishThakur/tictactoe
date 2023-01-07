@@ -12,3 +12,5 @@ This simple application demonstrate how we can use effect system to write pure f
 3. Property based testing using ScalaCheck. Can we generate inputs for the game?
 4. Add support to even build the Jar using docker - try multi-stage docker build.
 5. GraalVM native image support. Experiment with it and any noticable performance improvements.
+6. Fix all the warnings and code refactoring suggestions.
+7. Integrate with Scala static checks etc??
