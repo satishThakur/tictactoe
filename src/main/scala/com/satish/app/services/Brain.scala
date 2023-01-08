@@ -4,7 +4,7 @@ import com.satish.app.domain.{Board, Cell, Piece, Player}
 case class Row(empty: List[Cell], mine: List[Cell], opponent: List[Cell])
 
 object Row:
-  def apply:Row =  Row(Nil, Nil, Nil)
+  def apply: Row =  Row(Nil, Nil, Nil)
 
 object Brain:
 
@@ -20,9 +20,7 @@ object Brain:
     })
 
   private def queryBoard(b: Board, pieceToPlayer: Map[Piece, Player])(c: Cell): Option[Player] =
-    b.pieceAt(c).flatMap{
-      case p => pieceToPlayer.get(p)
-    }
+    b.pieceAt(c).flatMap(pieceToPlayer.get)
 
 
   private def processRow(cells: List[Cell], query: Cell => Option[Player]): Row =
@@ -34,8 +32,8 @@ object Brain:
 
   private def myWinningMove(r : Row): Option[Cell] =
     if r.empty.size == 1 && r.mine.size == 2
-    then Some(r.empty(0)) else None
+    then Some(r.empty.head) else None
 
   private def opponentWinningMove(r : Row): Option[Cell] =
     if r.empty.size == 1 && r.opponent.size == 2
-    then Some(r.empty(0)) else None
+    then Some(r.empty.head) else None
