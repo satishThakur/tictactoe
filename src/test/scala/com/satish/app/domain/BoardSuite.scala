@@ -40,4 +40,30 @@ class BoardSuite extends munit.FunSuite {
     }
     assert(board.isFull)
   }
+
+  test("placing multiple pieces at different position works"){
+    val b = Board(
+      Map(
+        Cell(1).get -> Piece.O,
+        Cell(2).get -> Piece.X,
+        Cell(3).get -> Piece.O,
+        Cell(4).get -> Piece.X,
+        Cell(5).get -> Piece.O,
+        Cell(6).get -> Piece.X,
+        Cell(7).get -> Piece.O,
+        Cell(8).get -> Piece.X,
+        Cell(9).get -> Piece.O
+      )
+    )
+    assert(b.isFull)
+    assert(b.pieceAt(Cell(1).get).contains(Piece.O))
+    assert(b.pieceAt(Cell(2).get).contains(Piece.X))
+    assert(b.pieceAt(Cell(3).get).contains(Piece.O))
+    assert(b.pieceAt(Cell(4).get).contains(Piece.X))
+    assert(b.pieceAt(Cell(5).get).contains(Piece.O))
+    assert(b.pieceAt(Cell(6).get).contains(Piece.X))
+    assert(b.pieceAt(Cell(7).get).contains(Piece.O))
+    assert(b.pieceAt(Cell(8).get).contains(Piece.X))
+    assert(b.pieceAt(Cell(9).get).contains(Piece.O))
+  }
 }

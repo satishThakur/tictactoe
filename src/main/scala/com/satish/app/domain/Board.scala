@@ -46,8 +46,8 @@ case class Board(state: Map[Cell, Piece]):
 
   def pieceAt(position: Cell) : Option[Piece] = state.get(position)
 
-  def isPieceAt(postion: Cell, piece: Piece): Boolean =
-    pieceAt(postion).map(_ == piece).getOrElse(false)
+  def isPieceAt(position: Cell, piece: Piece): Boolean =
+    pieceAt(position).contains(piece)
 
   def prettyPrint: String =
     val cells: List[Cell] = Cell.all
@@ -66,13 +66,8 @@ object Board:
   def empty: Board = new Board(Map.empty)
 
   def apply(cells: (Cell, Piece)*): Board =
-    val initailBoard = empty
-    stf(cells.toList).run(initailBoard)(1)
+    cells.foldLeft(empty) {
+      case (board, (cell, piece)) => board.placePiece(cell, piece)
+    }
 
-
-  def stf(cells: List[(Cell, Piece)]) : State[Board, List[Board]] =
-    State.traverse[Board,(Cell, Piece), Board](cells)(l => for{
-      s <- State.modify[Board](b => b.placePiece(l(0), l(1)))
-      g <- State.get
-    }yield g)
 
