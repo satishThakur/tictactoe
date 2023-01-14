@@ -1,14 +1,18 @@
 import Dependencies._
-
 val scala3Version = "3.2.1"
+
+inThisBuild(List(
+  organization := "com.satish",
+  name := "tictactoe",
+  version := "0.1.0-SNAPSHOT",
+  scalaVersion := scala3Version,
+  semanticdbEnabled := true,
+  semanticdbVersion := scalafixSemanticdb.revision,
+))
 
 lazy val root = project
   .in(file("."))
   .settings(
-    name := "tictactoe",
-    version := "0.1.0-SNAPSHOT",
-
-    scalaVersion := scala3Version,
     resolvers += Resolver.sonatypeRepo("snapshots"),
     scalacOptions ++= List("-feature", "-deprecation", "-Ykind-projector:underscores", "-source:future"),
 

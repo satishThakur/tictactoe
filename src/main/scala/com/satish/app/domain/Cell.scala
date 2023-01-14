@@ -2,37 +2,32 @@ package com.satish.app.domain
 
 import scala.util.Try
 
-/**
- * Cell ia a subset of Int but restricts the values to 1 to 9.
- * Cell represent a cell in the TicTacToe board.
- */
+/** Cell ia a subset of Int but restricts the values to 1 to 9. Cell represent a cell in the TicTacToe board.
+  */
 
 opaque type Cell = Int
 
 object Cell:
 
-  /**
-   * Creates a Cell from an Int.
-   * @param p the Int to be converted to Cell
-   * @return a Cell if i is between 1 and 9, otherwise None
-   */
+  /** Creates a Cell from an Int.
+    * @param p
+    *   the Int to be converted to Cell
+    * @return
+    *   a Cell if i is between 1 and 9, otherwise None
+    */
   def apply(p: Int): Option[Cell] =
     if p >= 1 && p <= 9 then Some(p) else None
 
-  /**
-   * All the possible Cells
-   */
+  /** All the possible Cells
+    */
   def all: List[Cell] = (1 to 9).toList.flatMap(apply)
 
-  /**
-   * Converts a raw string to a Cell.
-   */
+  /** Converts a raw string to a Cell.
+    */
   def fromString(s: String): Option[Cell] = Try(s.toInt).toOption.flatMap(apply)
 
-  /**
-   *
-   * Returns all the winner combinations of the Cells.
-   */
+  /** Returns all the winner combinations of the Cells.
+    */
   def winnerCombination: List[List[Cell]] = List(
     List(1, 2, 3),
     List(4, 5, 6),
@@ -46,7 +41,5 @@ object Cell:
 
   extension (c: Cell)
     def rank: Int = c
-    def row: Int = (c  - 1)  / 3
-    def col: Int = (c - 1)  % 3
-
-
+    def row: Int  = (c - 1) / 3
+    def col: Int  = (c - 1) % 3

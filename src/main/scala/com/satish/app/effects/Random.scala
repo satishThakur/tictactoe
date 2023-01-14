@@ -8,21 +8,18 @@ trait Random[F[_]]:
   def nextInt(upper: Int): F[Int]
   def nextBoolean: F[Boolean]
 
-
 object Random:
 
   def apply[F[_]](using Random[F]): Random[F] = summon[Random[F]]
 
   given r[F[_]: Sync]: Random[F] with
     def nextInt(upper: Int): F[Int] = CatsRandom.scalaUtilRandom[F].flatMap(_.nextIntBounded(upper))
-    def nextBoolean: F[Boolean] = CatsRandom.scalaUtilRandom[F].flatMap(_.nextBoolean)
+    def nextBoolean: F[Boolean]     = CatsRandom.scalaUtilRandom[F].flatMap(_.nextBoolean)
 
-
-
-  def make[F[_]](r : CatsRandom[F]): Random[F] = new Random[F]:
+  def make[F[_]](r: CatsRandom[F]): Random[F] = new Random[F]:
     def nextInt(upper: Int): F[Int] = r.nextIntBounded(upper)
-    def nextBoolean: F[Boolean] = r.nextBoolean
+    def nextBoolean: F[Boolean]     = r.nextBoolean
 
   def makeTest[F[_]](nf: Int => F[Int], bf: F[Boolean]): Random[F] = new Random[F]:
     def nextInt(upper: Int): F[Int] = nf(upper)
-    def nextBoolean: F[Boolean] = bf
+    def nextBoolean: F[Boolean]     = bf
