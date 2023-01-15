@@ -3,7 +3,6 @@ val scala3Version = "3.2.1"
 
 inThisBuild(List(
   organization := "com.satish",
-  name := "tictactoe",
   version := "0.1.0-SNAPSHOT",
   scalaVersion := scala3Version,
   semanticdbEnabled := true,
@@ -13,7 +12,8 @@ inThisBuild(List(
 lazy val root = project
   .in(file("."))
   .settings(
-    resolvers += Resolver.sonatypeRepo("snapshots"),
+    name := "tictactoe",
+    resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
     scalacOptions ++= List("-feature", "-deprecation", "-Ykind-projector:underscores", "-source:future"),
 
     libraryDependencies ++= Seq(
