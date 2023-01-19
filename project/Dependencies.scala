@@ -4,7 +4,7 @@ import sbt.librarymanagement.Configurations.Test
 object Dependencies {
   object V {
     val cats             = "2.9.0"
-    val catsEffect       = "3.4.1"
+    val catsEffect       = "3.4.4"
     val munit            = "0.7.29"
     val weaver           = "0.8.1"
     val munitScalaCheck  = "0.7.29"
