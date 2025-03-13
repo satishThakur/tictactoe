@@ -15,9 +15,15 @@ object Brain:
     Cell.winnerCombination.foldRight(None: Option[Cell])((w, o) => {
       o.orElse {
         val row = processRow(w, queryBoard(b, pieceToPlayer))
-        myWinningMove(row).orElse(opponentWinningMove(row))
+        // Always prioritize winning moves
+        myWinningMove(row).orElse(defendWithProbability(row))
       }
     })
+    
+  private def defendWithProbability(r: Row): Option[Cell] =
+    // 50% chance to defend against opponent's winning move
+    if scala.util.Random.nextBoolean() then opponentWinningMove(r)
+    else None
 
   private def queryBoard(b: Board, pieceToPlayer: Map[Piece, Player])(c: Cell): Option[Player] =
     b.pieceAt(c).flatMap(pieceToPlayer.get)
