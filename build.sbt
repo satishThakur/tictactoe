@@ -1,5 +1,5 @@
 import Dependencies._
-val scala3Version = "3.2.1"
+val scala3Version = "3.6.4"
 
 inThisBuild(List(
   organization := "com.satish",
